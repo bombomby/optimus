@@ -1,1 +1,2 @@
-# optimus
+# Optimus
+Performance monitoring system
