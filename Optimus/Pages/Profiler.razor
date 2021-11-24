@@ -1,0 +1,53 @@
+﻿@page "/profiler"
+@using Optimus.Shared
+@using Optimus.Tracing
+@using System.Net.Http
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject PerformanceTracer Tracer
+
+
+<PageTitle>Profiler</PageTitle>
+
+<button class="btn btn-primary" @onclick="() => Tracer.Start()">Start Trace</button>
+<button class="btn btn-primary" @onclick="() => Tracer.Stop()">Stop Trace</button>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Start</th>
+            <th>End</th>
+            <th>PID</th>
+            <th>Name</th>
+            <th>Command Line</th>
+            <th>Unique ID</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var process in Tracer.ProcessEvents)
+        {
+            <tr>
+                <td>@process.Start</td>
+                <td>@process.End</td>
+                <td>@process.ProcessID</td>
+                <td>@process.ProcessName</td>
+                <td>@process.CommandLine</td>
+                <td>@process.UniqueID</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var timer = new System.Threading.Timer((_) =>
+        {
+            InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+        }, null, 0, 1000);
+    }
+}
