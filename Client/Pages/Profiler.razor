@@ -1,0 +1,98 @@
+﻿@page "/profiler"
+@using Optimus.Shared
+@using Optimus.Tracing
+@using System.Net.Http
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.SignalR.Client
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+
+<PageTitle>Profiler</PageTitle>
+
+<button class="btn btn-primary" @onclick="StartTrace">Start Trace</button>
+<button class="btn btn-primary" @onclick="StopTrace">Stop Trace</button>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Start</th>
+            <th>End</th>
+            <th>PID</th>
+            <th>Name</th>
+            <th>Command Line</th>
+            <th>Unique ID</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var process in processEvents.Values.OrderBy(p => p.Start))
+        {
+            <tr>
+                <td>@process.Start</td>
+                <td>@process.End</td>
+                <td>@process.ProcessID</td>
+                <td>@process.ProcessName</td>
+                <td>@process.CommandLine</td>
+                <td>@process.UniqueID</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private HubConnection? hubConnection;
+    public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
+
+    private Dictionary<ulong, ProcessEvent> processEvents = new Dictionary<ulong, ProcessEvent>();
+
+    protected async Task StartTrace() 
+    {
+        var response = await Http.PostAsJsonAsync("api/Monitor/Start", "");
+        response.EnsureSuccessStatusCode();
+    }
+
+
+    protected async Task StopTrace() 
+    {
+        var response = await Http.PostAsJsonAsync("api/Monitor/Stop", "");
+        response.EnsureSuccessStatusCode();
+    }
+
+    protected async Task UpdateProcessList()
+    {
+        var response = await Http.GetFromJsonAsync<List<ProcessEvent>>("api/Monitor/Processes");
+
+        processEvents.Clear();
+        if (response != null)
+        {
+            foreach (ProcessEvent ev in response)
+            {
+                processEvents.Add(ev.UniqueID, ev);
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.ToAbsoluteUri("https://localhost:7062/performanceHub"))
+            .Build();
+
+        hubConnection.On<ProcessEvent>("OnProcess", (ev) =>
+        {
+            processEvents[ev.UniqueID] = ev;
+            StateHasChanged();
+        });
+
+        await hubConnection.StartAsync();
+        await UpdateProcessList();
+        //var timer = new System.Threading.Timer((_) =>
+        //{
+        //    InvokeAsync(() =>
+        //    {
+        //        UpdateProcessList();
+        //        StateHasChanged();
+        //    });
+        //}, null, 0, 1000);
+    }
+}
