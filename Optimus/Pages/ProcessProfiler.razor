@@ -1,4 +1,5 @@
 ﻿@page "/profiler"
+
 @using Optimus.Shared
 @using Optimus.Tracing
 @using System.Net.Http
@@ -10,8 +11,12 @@
 
 <PageTitle>Profiler</PageTitle>
 
-<button class="btn btn-primary" @onclick="() => Tracer.Start()">Start Trace</button>
-<button class="btn btn-primary" @onclick="() => Tracer.Stop()">Stop Trace</button>
+<h1>Profiler</h1>
+
+<div>
+    <button class="btn btn-primary" @onclick="() => Tracer.Start()">Start Trace</button>
+    <button class="btn btn-primary" @onclick="() => Tracer.Stop()">Stop Trace</button>
+</div>
 
 <table class="table">
     <thead>

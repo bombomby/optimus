@@ -1,0 +1,26 @@
+﻿@page "/"
+@using global::Profiler.Data
+@inject FrameCollection Frames
+
+<h3>CaptureList</h3>
+
+@foreach (var group in Frames.Groups)
+{
+    <CaptureViewer Group="@group" Summary="@group.Summary" />    
+}
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Run(() => {
+            if (Frames.Count == 0)
+            {
+                Frames.Load(@"C:\Users\slyus\Documents\SampleApp.opt");
+                Frames.Load(@"C:\Users\slyus\Documents\SampleApp2.opt");
+            }
+        });
+
+        StateHasChanged();
+    }
+
+}

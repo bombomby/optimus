@@ -1,6 +1,11 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Optimus.Tracing;
+using Profiler.Data;
+
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +14,14 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<PerformanceTracer>();
 builder.Services.AddSingleton<HttpClient>();
+builder.Services.AddSingleton<FrameCollection>();
+
+builder.Services.AddBlazorise(options =>
+  {
+      options.ChangeTextOnKeyPress = true; // optional
+      })
+  .AddBootstrapProviders()
+  .AddFontAwesomeIcons();
 
 var app = builder.Build();
 

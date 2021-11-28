@@ -1,0 +1,143 @@
+﻿@using Optimus.Utils
+@using Blazorise.Charts
+@using global::Profiler.Data
+
+<style>
+    .layout {
+        display: flex;
+        height: 200px;
+    }
+
+    .screenshot {
+        flex:1
+    }
+
+    .screenshot > img {
+        height: 100%;
+    }
+
+    .chart {
+        flex:100
+    }
+</style>
+
+<h3>@Group.Name</h3>
+
+<div class="layout">
+    <div class="screenshot">
+        <img src="@ImageUtils.Base64ToURL(ImageBase64)" />
+    </div>
+    <div class="chart">
+        <BarChart @ref="barChart" TItem="double" OptionsObject="@chartOptions" />
+    </div>
+</div>
+
+<div >
+    
+</div>
+
+@code {
+    [Parameter]
+    public FrameGroup Group { get; set; }
+    [Parameter]
+    public SummaryPack Summary { get; set; }
+    [Parameter]
+    public String Name { get; set; }
+
+    public String ImageBase64 { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Run(() => {
+            if (Summary != null)
+            {
+                FileAttachment? img = Summary.Attachments.Find(att => att.FileType == FileAttachment.Type.IMAGE);
+                if (img != null)
+                {
+                    long pos = img.Data.Position;
+                    ImageBase64 = ImageUtils.ToBase64(img.Data);
+                    img.Data.Position = pos;
+                }
+            }
+        });
+        StateHasChanged();
+    }
+
+
+    BarChart<double> barChart;
+
+    protected override async Task OnAfterRenderAsync( bool firstRender )
+    {
+        if ( firstRender )
+        {
+            await HandleRedraw();
+        }
+    }
+
+    async Task HandleRedraw()
+    {
+        await barChart.Clear();
+        //await barChart.AddLabelsDatasetsAndUpdate( Labels, GetBarChartDataset() );
+        //await barChart.AddLabelsDatasetsAndUpdate(GetBarChartLabels(), GetBarChartDataset());
+        await barChart.AddLabelsDatasetsAndUpdate(GetBarChartLabels(), GetBarChartDataset());
+    }
+
+    BarChartDataset<double> GetBarChartDataset()
+    {
+        return new BarChartDataset<double>
+        {
+            Label = "Frame Time (ms)",
+            Data = Summary.Frames,
+            BackgroundColor = GetBarChartColor(),
+            //BorderColor = borderColors,
+        };
+    }
+
+    List<String> GetBarChartLabels()
+    {
+        List<String> labels = new List<String>();
+        for (int i = 0; i < Summary.Frames.Count; ++i)
+            labels.Add(i.ToString());
+        return labels;
+    }
+
+    List<String> GetBarChartColor()
+    {
+        String color = ChartColor.FromRgba(0, 0, 255, 0.6f);
+        List<String> colors = new List<String>();
+        for (int i = 0; i < Summary.Frames.Count; ++i)
+            colors.Add(color);
+        return colors;
+    }
+
+    object chartOptions = new
+    {
+        MaintainAspectRatio = false,
+        Scales = new
+        {
+            YAxes = new[] {
+                new {
+                    Ticks = new
+                    {
+                        BeginAtZero = true    
+                    },
+                }
+            },
+            XAxes = new[]
+            {
+                new {
+                    Display = false
+                }
+            }
+        },
+        Legend = new
+        {
+            Display = false,
+        }
+    };
+
+    //string[] Labels = { "Red", "Blue", "Yellow", "Green", "Purple", "Orange" };
+    //List<string> backgroundColors = new List<string> { ChartColor.FromRgba( 255, 99, 132, 0.2f ), ChartColor.FromRgba( 54, 162, 235, 0.2f ), ChartColor.FromRgba( 255, 206, 86, 0.2f ), ChartColor.FromRgba( 75, 192, 192, 0.2f ), ChartColor.FromRgba( 153, 102, 255, 0.2f ), ChartColor.FromRgba( 255, 159, 64, 0.2f ) };
+    //List<string> borderColors = new List<string> { ChartColor.FromRgba( 255, 99, 132, 1f ), ChartColor.FromRgba( 54, 162, 235, 1f ), ChartColor.FromRgba( 255, 206, 86, 1f ), ChartColor.FromRgba( 75, 192, 192, 1f ), ChartColor.FromRgba( 153, 102, 255, 1f ), ChartColor.FromRgba( 255, 159, 64, 1f ) };
+}

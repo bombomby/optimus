@@ -16,5 +16,7 @@ namespace Optimus.Tracing
         public int ProcessID { get; set; }
         public ulong UniqueID { get; set; }
         public int ExitStatus { get; set; }
+
+        public bool IsRunning => End < Start;
     }
 }

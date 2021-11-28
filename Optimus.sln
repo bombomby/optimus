@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Optimus.Tracing", "Tracing\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Optimus", "Optimus\Optimus.csproj", "{8794E6FF-6A7A-4294-89F1-49C01708C88F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profiler.Data", "Optick\gui\Profiler.Data\Profiler.Data.csproj", "{37D3FA6A-86FA-43B2-8A4F-681DAA3C5E63}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{8794E6FF-6A7A-4294-89F1-49C01708C88F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8794E6FF-6A7A-4294-89F1-49C01708C88F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8794E6FF-6A7A-4294-89F1-49C01708C88F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37D3FA6A-86FA-43B2-8A4F-681DAA3C5E63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37D3FA6A-86FA-43B2-8A4F-681DAA3C5E63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37D3FA6A-86FA-43B2-8A4F-681DAA3C5E63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37D3FA6A-86FA-43B2-8A4F-681DAA3C5E63}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
